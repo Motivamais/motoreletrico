@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motor Elétrico Girando</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        .motor-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .motor-image {
+            width: 200px;
+            height: 200px;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+        }
+
+        button:active {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="motor-container">
+        <img src="motoreletrico.png" alt="Motor" class="motor-image" id="motorImage">
+    </div>
+    <div class="controls">
+        <button id="startButton">Start</button>
+        <button id="stopButton">Stop</button>
+        <button id="speedUpButton">Speed Up</button>
+        <button id="slowDownButton">Slow Down</button>
+        <button id="resetButton">Reset</button>
+    </div>
+    <script>
+        let motorImage = document.getElementById('motorImage');
+        let startButton = document.getElementById('startButton');
+        let stopButton = document.getElementById('stopButton');
+        let speedUpButton = document.getElementById('speedUpButton');
+        let slowDownButton = document.getElementById('slowDownButton');
+        let resetButton = document.getElementById('resetButton');
+
+        let initialSpeed = 2;  // Initial rotation speed
+        let rotationSpeed = initialSpeed;
+        let spinning = false;
+
+        startButton.addEventListener('click', () => {
+            if (!spinning) {
+                motorImage.style.animation = `spin ${rotationSpeed}s linear infinite`;
+                spinning = true;
+            }
+        });
+
+        stopButton.addEventListener('click', () => {
+            motorImage.style.animation = 'none';
+            spinning = false;
+        });
+
+        speedUpButton.addEventListener('click', () => {
+            if (spinning) {
+                rotationSpeed /= 1.5;
+                motorImage.style.animation = `spin ${rotationSpeed}s linear infinite`;
+            }
+        });
+
+        slowDownButton.addEventListener('click', () => {
+            if (spinning) {
+                rotationSpeed *= 1.5;
+                motorImage.style.animation = `spin ${rotationSpeed}s linear infinite`;
+            }
+        });
+
+        resetButton.addEventListener('click', () => {
+            rotationSpeed = initialSpeed;
+            if (spinning) {
+                motorImage.style.animation = `spin ${rotationSpeed}s linear infinite`;
+            }
+        });
+    </script>
+</body>
+</html>
