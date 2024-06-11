@@ -31,10 +31,22 @@
 
         .ice {
             width: 50px;
+            background-color: #fff;
+            position: absolute;
+            right: -60px;
+            bottom: 0;
+            transition: height 0.5s;
+            cursor: grab;
+        }
+
+        .water {
+            width: 50px;
             background-color: #00f;
             position: absolute;
             right: -60px;
             bottom: 0;
+            height: 0;
+            opacity: 0.5;
             transition: height 0.5s;
         }
 
@@ -73,6 +85,7 @@
     <div class="motor-container">
         <img src="motoreletrico.png" alt="Motor" class="motor-image" id="motorImage">
         <div class="ice" id="iceBlock" style="height: 200px;"></div>
+        <div class="water" id="water" style="height: 0;"></div>
     </div>
     <div class="controls">
         <button id="startButton">Start</button>
@@ -90,6 +103,7 @@
     <script>
         let motorImage = document.getElementById('motorImage');
         let iceBlock = document.getElementById('iceBlock');
+        let water = document.getElementById('water');
         let startButton = document.getElementById('startButton');
         let stopButton = document.getElementById('stopButton');
         let speedUpButton = document.getElementById('speedUpButton');
@@ -140,6 +154,7 @@
             rotationSpeed = initialSpeed;
             iceHeight = 200;
             iceBlock.style.height = `${iceHeight}px`;
+            water.style.height = '0px';
             if (spinning) {
                 motorImage.style.animation = `spin ${rotationSpeed}s linear infinite`;
             }
@@ -169,6 +184,7 @@
             if (spinning && iceHeight > 0) {
                 iceHeight -= iceMeltRate;
                 iceBlock.style.height = `${iceHeight}px`;
+                water.style.height = `${200 - iceHeight}px`;
                 setTimeout(meltIce, 1000);
             }
         }
@@ -176,6 +192,36 @@
         function updateIceMeltRate() {
             iceMeltRate = initialSpeed / rotationSpeed;
         }
+
+        iceBlock.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            let shiftX = e.clientX - iceBlock.getBoundingClientRect().left;
+            let shiftY = e.clientY - iceBlock.getBoundingClientRect().top;
+
+            function moveAt(pageX, pageY) {
+                iceBlock.style.left = pageX - shiftX + 'px';
+                iceBlock.style.top = pageY - shiftY + 'px';
+                water.style.left = pageX - shiftX + 'px';
+                water.style.top = pageY - shiftY + (200 - iceHeight) + 'px';
+            }
+
+            function onMouseMove(e) {
+                moveAt(e.pageX, e.pageY);
+            }
+
+            document.addEventListener('mousemove', onMouseMove);
+
+            iceBlock.addEventListener('mouseup', function() {
+                document.removeEventListener('mousemove', onMouseMove);
+                iceBlock.onmouseup = null;
+            });
+
+        });
+
+        iceBlock.ondragstart = function() {
+            return false;
+        };
+
     </script>
 </body>
 </html>
