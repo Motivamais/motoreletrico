@@ -6,34 +6,26 @@
     <title>Motor Elétrico Girando</title>
     <style>
         body {
-            margin: 0;
-            overflow: hidden;
-            background-color: green;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            margin: 0;
+            background-color: #90ee90; /* Verde claro */
         }
 
-        .game-container {
+        .motor-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
             position: relative;
-            width: 100%;
-            height: 80vh;
-            background-color: green;
-            overflow: hidden;
         }
 
         .motor-image {
-            width: 100px;
-            height: 100px;
-            position: absolute;
-        }
-
-        .enemy {
-            width: 50px;
-            height: 50px;
-            background-color: red;
+            width: 200px;
+            height: 200px;
             position: absolute;
         }
 
@@ -46,17 +38,11 @@
             }
         }
 
-        .controls {
+        .controls, .move-controls {
             display: flex;
             justify-content: center;
             gap: 10px;
-            margin-top: 20px;
-        }
-
-        .direction-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            margin-bottom: 10px;
         }
 
         button {
@@ -75,25 +61,21 @@
     </style>
 </head>
 <body>
-    <div class="game-container" id="gameContainer">
-        <img src="https://example.com/motor.png" alt="Motor" class="motor-image" id="motorImage" style="left: 50%; top: 50%;">
+    <div class="motor-container">
+        <img src="https://example.com/motoreletrico.png" alt="Motor" class="motor-image" id="motorImage">
     </div>
     <div class="controls">
-        <div class="direction-controls">
-            <button id="upButton">↑</button>
-            <div style="display: flex; justify-content: center; gap: 10px;">
-                <button id="leftButton">←</button>
-                <button id="rightButton">→</button>
-            </div>
-            <button id="downButton">↓</button>
-        </div>
-        <div>
-            <button id="startButton">Start</button>
-            <button id="stopButton">Stop</button>
-            <button id="speedUpButton">Speed Up</button>
-            <button id="slowDownButton">Slow Down</button>
-            <button id="resetButton">Reset</button>
-        </div>
+        <button id="startButton">Start</button>
+        <button id="stopButton">Stop</button>
+        <button id="speedUpButton">Speed Up</button>
+        <button id="slowDownButton">Slow Down</button>
+        <button id="resetButton">Reset</button>
+    </div>
+    <div class="move-controls">
+        <button id="upButton">↑</button>
+        <button id="leftButton">←</button>
+        <button id="downButton">↓</button>
+        <button id="rightButton">→</button>
     </div>
     <script>
         let motorImage = document.getElementById('motorImage');
@@ -110,103 +92,60 @@
         let initialSpeed = 2;  // Initial rotation speed
         let rotationSpeed = initialSpeed;
         let spinning = false;
-        let motorPosition = { top: 50, left: 50 };
-        let enemies = [];
+        let moveStep = 10;  // Step size for moving the image
 
-        function startMotor() {
+        startButton.addEventListener('click', () => {
             if (!spinning) {
                 motorImage.style.animation = `spin ${rotationSpeed}s linear infinite`;
                 spinning = true;
             }
-        }
+        });
 
-        function stopMotor() {
+        stopButton.addEventListener('click', () => {
             motorImage.style.animation = 'none';
             spinning = false;
-        }
+        });
 
-        function speedUpMotor() {
+        speedUpButton.addEventListener('click', () => {
             if (spinning) {
                 rotationSpeed /= 1.5;
                 motorImage.style.animation = `spin ${rotationSpeed}s linear infinite`;
             }
-        }
+        });
 
-        function slowDownMotor() {
+        slowDownButton.addEventListener('click', () => {
             if (spinning) {
                 rotationSpeed *= 1.5;
                 motorImage.style.animation = `spin ${rotationSpeed}s linear infinite`;
             }
-        }
+        });
 
-        function resetMotor() {
+        resetButton.addEventListener('click', () => {
             rotationSpeed = initialSpeed;
             if (spinning) {
                 motorImage.style.animation = `spin ${rotationSpeed}s linear infinite`;
             }
-        }
+        });
 
-        function moveMotor(direction) {
-            const step = 10;
-            if (direction === 'up') motorPosition.top -= step;
-            if (direction === 'down') motorPosition.top += step;
-            if (direction === 'left') motorPosition.left -= step;
-            if (direction === 'right') motorPosition.left += step;
-            motorImage.style.top = `${motorPosition.top}%`;
-            motorImage.style.left = `${motorPosition.left}%`;
-        }
+        upButton.addEventListener('click', () => {
+            let top = parseInt(window.getComputedStyle(motorImage).top, 10);
+            motorImage.style.top = `${top - moveStep}px`;
+        });
 
-        function createEnemy() {
-            const enemy = document.createElement('div');
-            enemy.className = 'enemy';
-            enemy.style.top = '0';
-            enemy.style.left = `${Math.random() * 100}%`;
-            document.getElementById('gameContainer').appendChild(enemy);
-            enemies.push(enemy);
-        }
+        downButton.addEventListener('click', () => {
+            let top = parseInt(window.getComputedStyle(motorImage).top, 10);
+            motorImage.style.top = `${top + moveStep}px`;
+        });
 
-        function updateEnemies() {
-            enemies.forEach((enemy, index) => {
-                const enemyTop = parseInt(enemy.style.top);
-                if (enemyTop > 100) {
-                    enemy.remove();
-                    enemies.splice(index, 1);
-                } else {
-                    enemy.style.top = `${enemyTop + 1}%`;
-                    checkCollision(enemy);
-                }
-            });
-        }
+        leftButton.addEventListener('click', () => {
+            let left = parseInt(window.getComputedStyle(motorImage).left, 10);
+            motorImage.style.left = `${left - moveStep}px`;
+        });
 
-        function checkCollision(enemy) {
-            const motorRect = motorImage.getBoundingClientRect();
-            const enemyRect = enemy.getBoundingClientRect();
-
-            const overlap = !(motorRect.right < enemyRect.left ||
-                              motorRect.left > enemyRect.right ||
-                              motorRect.bottom < enemyRect.top ||
-                              motorRect.top > enemyRect.bottom);
-
-            if (overlap && spinning) {
-                enemy.remove();
-                enemies = enemies.filter(e => e !== enemy);
-            }
-        }
-
-        setInterval(() => {
-            createEnemy();
-            updateEnemies();
-        }, 2000);
-
-        startButton.addEventListener('click', startMotor);
-        stopButton.addEventListener('click', stopMotor);
-        speedUpButton.addEventListener('click', speedUpMotor);
-        slowDownButton.addEventListener('click', slowDownMotor);
-        resetButton.addEventListener('click', resetMotor);
-        upButton.addEventListener('click', () => moveMotor('up'));
-        downButton.addEventListener('click', () => moveMotor('down'));
-        leftButton.addEventListener('click', () => moveMotor('left'));
-        rightButton.addEventListener('click', () => moveMotor('right'));
+        rightButton.addEventListener('click', () => {
+            let left = parseInt(window.getComputedStyle(motorImage).left, 10);
+            motorImage.style.left = `${left + moveStep}px`;
+        });
     </script>
 </body>
 </html>
