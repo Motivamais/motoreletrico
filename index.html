@@ -50,6 +50,28 @@
             transition: height 0.5s;
         }
 
+        .drop {
+            width: 5px;
+            height: 10px;
+            background-color: #00f;
+            position: absolute;
+            bottom: 0;
+            opacity: 0.7;
+            border-radius: 50%;
+            animation: dropFall 2s linear infinite;
+        }
+
+        @keyframes dropFall {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(200px);
+                opacity: 0;
+            }
+        }
+
         @keyframes spin {
             from {
                 transform: rotate(0deg);
@@ -158,6 +180,7 @@
             iceBlock.style.opacity = 1;
             water.style.height = '0px';
             motorContainer.style.display = 'flex';
+            clearDrops();
             if (spinning) {
                 motorImage.style.animation = `spin ${rotationSpeed}s linear infinite`;
             }
@@ -188,6 +211,7 @@
                 iceHeight -= iceMeltRate;
                 iceBlock.style.height = `${iceHeight}px`;
                 water.style.height = `${200 - iceHeight}px`;
+                createDrop();
                 if (iceHeight <= 0) {
                     iceBlock.style.opacity = 0;
                     motorContainer.style.display = 'none';
@@ -198,6 +222,24 @@
 
         function updateIceMeltRate() {
             iceMeltRate = initialSpeed / rotationSpeed;
+        }
+
+        function createDrop() {
+            if (iceHeight > 0) {
+                let drop = document.createElement('div');
+                drop.className = 'drop';
+                drop.style.left = `${iceBlock.offsetLeft + 20}px`;
+                drop.style.bottom = `${iceBlock.offsetTop + iceHeight}px`;
+                document.body.appendChild(drop);
+                setTimeout(() => {
+                    drop.remove();
+                }, 2000);
+            }
+        }
+
+        function clearDrops() {
+            let drops = document.querySelectorAll('.drop');
+            drops.forEach(drop => drop.remove());
         }
 
         iceBlock.addEventListener('mousedown', function(e) {
