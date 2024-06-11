@@ -54,7 +54,6 @@
             height: 10px;
             background-color: #00f;
             position: absolute;
-            bottom: 0;
             opacity: 0.7;
             border-radius: 50%;
             animation: dropFall 2s linear infinite;
@@ -176,6 +175,7 @@
             iceHeight = 200;
             iceBlock.style.height = `${iceHeight}px`;
             iceBlock.style.opacity = 1;
+            iceBlock.style.display = 'block';
             water.style.height = '0px';
             clearDrops();
             if (spinning) {
@@ -211,6 +211,9 @@
                 createDrop();
                 if (iceHeight <= 0) {
                     iceBlock.style.opacity = 0;
+                    setTimeout(() => {
+                        iceBlock.style.display = 'none';
+                    }, 500);
                 }
                 setTimeout(meltIce, 1000);
             }
@@ -224,8 +227,8 @@
             if (iceHeight > 0) {
                 let drop = document.createElement('div');
                 drop.className = 'drop';
-                drop.style.left = `${iceBlock.offsetLeft + 20}px`;
-                drop.style.bottom = `${iceBlock.offsetTop + iceHeight}px`;
+                drop.style.left = `${iceBlock.offsetLeft + 22.5}px`;
+                drop.style.top = `${iceBlock.offsetTop + iceHeight}px`;
                 document.body.appendChild(drop);
                 setTimeout(() => {
                     drop.remove();
