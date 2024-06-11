@@ -35,7 +35,7 @@
             position: absolute;
             right: -60px;
             bottom: 0;
-            transition: height 0.5s;
+            transition: height 0.5s, opacity 0.5s;
             cursor: grab;
         }
 
@@ -154,6 +154,7 @@
             rotationSpeed = initialSpeed;
             iceHeight = 200;
             iceBlock.style.height = `${iceHeight}px`;
+            iceBlock.style.opacity = 1;
             water.style.height = '0px';
             if (spinning) {
                 motorImage.style.animation = `spin ${rotationSpeed}s linear infinite`;
@@ -185,6 +186,9 @@
                 iceHeight -= iceMeltRate;
                 iceBlock.style.height = `${iceHeight}px`;
                 water.style.height = `${200 - iceHeight}px`;
+                if (iceHeight <= 0) {
+                    iceBlock.style.opacity = 0;
+                }
                 setTimeout(meltIce, 1000);
             }
         }
