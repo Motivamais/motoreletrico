@@ -29,6 +29,15 @@
             position: absolute;
         }
 
+        .ice {
+            width: 50px;
+            background-color: #00f;
+            position: absolute;
+            right: -60px;
+            bottom: 0;
+            transition: height 0.5s;
+        }
+
         @keyframes spin {
             from {
                 transform: rotate(0deg);
@@ -63,6 +72,7 @@
 <body>
     <div class="motor-container">
         <img src="motoreletrico.png" alt="Motor" class="motor-image" id="motorImage">
+        <div class="ice" id="iceBlock" style="height: 200px;"></div>
     </div>
     <div class="controls">
         <button id="startButton">Start</button>
@@ -79,6 +89,7 @@
     </div>
     <script>
         let motorImage = document.getElementById('motorImage');
+        let iceBlock = document.getElementById('iceBlock');
         let startButton = document.getElementById('startButton');
         let stopButton = document.getElementById('stopButton');
         let speedUpButton = document.getElementById('speedUpButton');
@@ -89,15 +100,18 @@
         let leftButton = document.getElementById('leftButton');
         let rightButton = document.getElementById('rightButton');
 
-        let initialSpeed = 2;  // Initial rotation speed
+        let initialSpeed = 2;  // Initial rotation speed in seconds
         let rotationSpeed = initialSpeed;
         let spinning = false;
         let moveStep = 10;  // Step size for moving the image
+        let iceHeight = 200;  // Initial height of the ice block
+        let iceMeltRate = 1;  // Initial melt rate of the ice block
 
         startButton.addEventListener('click', () => {
             if (!spinning) {
                 motorImage.style.animation = `spin ${rotationSpeed}s linear infinite`;
                 spinning = true;
+                meltIce();
             }
         });
 
@@ -110,6 +124,7 @@
             if (spinning) {
                 rotationSpeed /= 1.5;
                 motorImage.style.animation = `spin ${rotationSpeed}s linear infinite`;
+                updateIceMeltRate();
             }
         });
 
@@ -117,11 +132,14 @@
             if (spinning) {
                 rotationSpeed *= 1.5;
                 motorImage.style.animation = `spin ${rotationSpeed}s linear infinite`;
+                updateIceMeltRate();
             }
         });
 
         resetButton.addEventListener('click', () => {
             rotationSpeed = initialSpeed;
+            iceHeight = 200;
+            iceBlock.style.height = `${iceHeight}px`;
             if (spinning) {
                 motorImage.style.animation = `spin ${rotationSpeed}s linear infinite`;
             }
@@ -146,6 +164,18 @@
             let left = parseInt(window.getComputedStyle(motorImage).left, 10);
             motorImage.style.left = `${left + moveStep}px`;
         });
+
+        function meltIce() {
+            if (spinning && iceHeight > 0) {
+                iceHeight -= iceMeltRate;
+                iceBlock.style.height = `${iceHeight}px`;
+                setTimeout(meltIce, 1000);
+            }
+        }
+
+        function updateIceMeltRate() {
+            iceMeltRate = initialSpeed / rotationSpeed;
+        }
     </script>
 </body>
 </html>
