@@ -82,7 +82,7 @@
     </style>
 </head>
 <body>
-    <div class="motor-container">
+    <div class="motor-container" id="motorContainer">
         <img src="motoreletrico.png" alt="Motor" class="motor-image" id="motorImage">
         <div class="ice" id="iceBlock" style="height: 200px;"></div>
         <div class="water" id="water" style="height: 0;"></div>
@@ -104,6 +104,7 @@
         let motorImage = document.getElementById('motorImage');
         let iceBlock = document.getElementById('iceBlock');
         let water = document.getElementById('water');
+        let motorContainer = document.getElementById('motorContainer');
         let startButton = document.getElementById('startButton');
         let stopButton = document.getElementById('stopButton');
         let speedUpButton = document.getElementById('speedUpButton');
@@ -156,6 +157,7 @@
             iceBlock.style.height = `${iceHeight}px`;
             iceBlock.style.opacity = 1;
             water.style.height = '0px';
+            motorContainer.style.display = 'flex';
             if (spinning) {
                 motorImage.style.animation = `spin ${rotationSpeed}s linear infinite`;
             }
@@ -188,6 +190,7 @@
                 water.style.height = `${200 - iceHeight}px`;
                 if (iceHeight <= 0) {
                     iceBlock.style.opacity = 0;
+                    motorContainer.style.display = 'none';
                 }
                 setTimeout(meltIce, 1000);
             }
