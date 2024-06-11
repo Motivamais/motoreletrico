@@ -26,48 +26,16 @@
         .motor-image {
             width: 200px;
             height: 200px;
+            position: absolute;
         }
 
         .ice {
             width: 50px;
-            background-color: #fff;
-            position: absolute;
-            right: -60px;
-            bottom: 0;
-            transition: height 0.5s, opacity 0.5s;
-            cursor: grab;
-        }
-
-        .water {
-            width: 50px;
             background-color: #00f;
             position: absolute;
             right: -60px;
             bottom: 0;
-            height: 0;
-            opacity: 0.5;
             transition: height 0.5s;
-        }
-
-        .drop {
-            width: 5px;
-            height: 10px;
-            background-color: #00f;
-            position: absolute;
-            opacity: 0.7;
-            border-radius: 50%;
-            animation: dropFall 2s linear infinite;
-        }
-
-        @keyframes dropFall {
-            0% {
-                transform: translateY(0);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(200px);
-                opacity: 0;
-            }
         }
 
         @keyframes spin {
@@ -105,7 +73,6 @@
     <div class="motor-container">
         <img src="motoreletrico.png" alt="Motor" class="motor-image" id="motorImage">
         <div class="ice" id="iceBlock" style="height: 200px;"></div>
-        <div class="water" id="water" style="height: 0;"></div>
     </div>
     <div class="controls">
         <button id="startButton">Start</button>
@@ -123,7 +90,6 @@
     <script>
         let motorImage = document.getElementById('motorImage');
         let iceBlock = document.getElementById('iceBlock');
-        let water = document.getElementById('water');
         let startButton = document.getElementById('startButton');
         let stopButton = document.getElementById('stopButton');
         let speedUpButton = document.getElementById('speedUpButton');
@@ -174,10 +140,6 @@
             rotationSpeed = initialSpeed;
             iceHeight = 200;
             iceBlock.style.height = `${iceHeight}px`;
-            iceBlock.style.opacity = 1;
-            iceBlock.style.display = 'block';
-            water.style.height = '0px';
-            clearDrops();
             if (spinning) {
                 motorImage.style.animation = `spin ${rotationSpeed}s linear infinite`;
             }
@@ -207,14 +169,6 @@
             if (spinning && iceHeight > 0) {
                 iceHeight -= iceMeltRate;
                 iceBlock.style.height = `${iceHeight}px`;
-                water.style.height = `${200 - iceHeight}px`;
-                createDrop();
-                if (iceHeight <= 0) {
-                    iceBlock.style.opacity = 0;
-                    setTimeout(() => {
-                        iceBlock.style.display = 'none';
-                    }, 500);
-                }
                 setTimeout(meltIce, 1000);
             }
         }
@@ -222,54 +176,6 @@
         function updateIceMeltRate() {
             iceMeltRate = initialSpeed / rotationSpeed;
         }
-
-        function createDrop() {
-            if (iceHeight > 0) {
-                let drop = document.createElement('div');
-                drop.className = 'drop';
-                drop.style.left = `${iceBlock.offsetLeft + 22.5}px`;
-                drop.style.top = `${iceBlock.offsetTop + iceHeight}px`;
-                document.body.appendChild(drop);
-                setTimeout(() => {
-                    drop.remove();
-                }, 2000);
-            }
-        }
-
-        function clearDrops() {
-            let drops = document.querySelectorAll('.drop');
-            drops.forEach(drop => drop.remove());
-        }
-
-        iceBlock.addEventListener('mousedown', function(e) {
-            e.preventDefault();
-            let shiftX = e.clientX - iceBlock.getBoundingClientRect().left;
-            let shiftY = e.clientY - iceBlock.getBoundingClientRect().top;
-
-            function moveAt(pageX, pageY) {
-                iceBlock.style.left = pageX - shiftX + 'px';
-                iceBlock.style.top = pageY - shiftY + 'px';
-                water.style.left = pageX - shiftX + 'px';
-                water.style.top = pageY - shiftY + (200 - iceHeight) + 'px';
-            }
-
-            function onMouseMove(e) {
-                moveAt(e.pageX, e.pageY);
-            }
-
-            document.addEventListener('mousemove', onMouseMove);
-
-            iceBlock.addEventListener('mouseup', function() {
-                document.removeEventListener('mousemove', onMouseMove);
-                iceBlock.onmouseup = null;
-            });
-
-        });
-
-        iceBlock.ondragstart = function() {
-            return false;
-        };
-
     </script>
 </body>
 </html>
