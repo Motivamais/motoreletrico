@@ -89,7 +89,7 @@
         let aquecendo = false;
         let temperatura = 0;
         let intervaloAquecimento;
-        let alturaPedraDeGelo = 300;  // Altura inicial da pedra de gelo
+        let alturaPedraDeGelo = 200;  // Altura inicial da pedra de gelo
         let taxaDerretimento =  1;  // Taxa de derretimento da pedra de gelo
 
         aquecerButton.addEventListener('click', () => {
@@ -110,7 +110,7 @@
             temperatura = 0;
             resistencia.style.filter = `none`;  // Reseta a cor da resistência
             fumaça.style.opacity = 0;
-            alturaPedraDeGelo = 300;
+            alturaPedraDeGelo = 200;
             pedraDeGelo.style.height = `${alturaPedraDeGelo}px`;
         });
 
