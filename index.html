@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Motor Elétrico Girando</title>
+    <title>Aquecer Resistência</title>
     <style>
         body {
             display: flex;
@@ -12,46 +12,41 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #90ee90; /* Verde claro */
+            background-color: #f0f0f0;
         }
 
-        .motor-container {
+        .container {
             display: flex;
-            justify-content: center;
             align-items: center;
-            margin-bottom: 20px;
             position: relative;
         }
 
-        .motor-image {
+        .container img {
             width: 200px;
-            height: 200px;
-            position: absolute;
+            transition: filter 0.5s;
         }
 
-        .ice {
-            width: 50px;
-            background-color: #FFFFFF;
+        #pedra_de_gelo {
+            width: 100px;
             position: absolute;
-            right: -60px;
+            left: 220px;
             bottom: 0;
-            transition: height 0.5s;
         }
 
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
+        #gota {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 10px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.5s;
         }
 
-        .controls, .move-controls {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 10px;
+        .controls {
+            margin-top: 20px;
         }
 
         button {
@@ -62,6 +57,7 @@
             border-radius: 5px;
             background-color: #007bff;
             color: white;
+            margin: 5px;
         }
 
         button:active {
@@ -70,111 +66,58 @@
     </style>
 </head>
 <body>
-    <div class="motor-container">
-        <img src="motoreletrico.png" alt="Motor" class="motor-image" id="motorImage">
-        <div class="ice" id="iceBlock" style="height: 200px;"></div>
+    <div class="container">
+        <img src="resistencia.png" alt="Resistência" id="resistencia">
+        <img src="pedra_de_gelo.png" alt="Pedra de Gelo" id="pedra_de_gelo">
+        <div id="gota"></div>
     </div>
     <div class="controls">
-        <button id="startButton">Start</button>
-        <button id="stopButton">Stop</button>
-        <button id="speedUpButton">Speed Up</button>
-        <button id="slowDownButton">Slow Down</button>
-        <button id="resetButton">Reset</button>
-    </div>
-    <div class="move-controls">
-        <button id="upButton">↑</button>
-        <button id="leftButton">←</button>
-        <button id="downButton">↓</button>
-        <button id="rightButton">→</button>
+        <button id="aquecerButton">Aquecer</button>
+        <button id="pararButton">Parar</button>
     </div>
     <script>
-        let motorImage = document.getElementById('motorImage');
-        let iceBlock = document.getElementById('iceBlock');
-        let startButton = document.getElementById('startButton');
-        let stopButton = document.getElementById('stopButton');
-        let speedUpButton = document.getElementById('speedUpButton');
-        let slowDownButton = document.getElementById('slowDownButton');
-        let resetButton = document.getElementById('resetButton');
-        let upButton = document.getElementById('upButton');
-        let downButton = document.getElementById('downButton');
-        let leftButton = document.getElementById('leftButton');
-        let rightButton = document.getElementById('rightButton');
+        let resistencia = document.getElementById('resistencia');
+        let pedraDeGelo = document.getElementById('pedra_de_gelo');
+        let gota = document.getElementById('gota');
+        let aquecerButton = document.getElementById('aquecerButton');
+        let pararButton = document.getElementById('pararButton');
 
-        let initialSpeed = 2;  // Initial rotation speed in seconds
-        let rotationSpeed = initialSpeed;
-        let spinning = false;
-        let moveStep = 10;  // Step size for moving the image
-        let iceHeight = 200;  // Initial height of the ice block
-        let iceMeltRate = 1;  // Initial melt rate of the ice block
+        let aquecendo = false;
+        let temperatura = 0;
+        let intervaloAquecimento;
+        let alturaPedraDeGelo = 100;  // Altura inicial da pedra de gelo
+        let taxaDerretimento = 1;  // Taxa de derretimento da pedra de gelo
 
-        startButton.addEventListener('click', () => {
-            if (!spinning) {
-                motorImage.style.animation = `spin ${rotationSpeed}s linear infinite`;
-                spinning = true;
-                meltIce();
+        aquecerButton.addEventListener('click', () => {
+            if (!aquecendo) {
+                aquecendo = true;
+                intervaloAquecimento = setInterval(aquecer, 100);
             }
         });
 
-        stopButton.addEventListener('click', () => {
-            motorImage.style.animation = 'none';
-            spinning = false;
+        pararButton.addEventListener('click', () => {
+            aquecendo = false;
+            clearInterval(intervaloAquecimento);
         });
 
-        speedUpButton.addEventListener('click', () => {
-            if (spinning) {
-                rotationSpeed /= 1.5;
-                motorImage.style.animation = `spin ${rotationSpeed}s linear infinite`;
-                updateIceMeltRate();
+        function aquecer() {
+            if (aquecendo) {
+                temperatura += 5;
+                resistencia.style.filter = `hue-rotate(${temperatura}deg)`;
+                if (temperatura >= 360) {
+                    temperatura = 0;
+                }
+
+                // Derretimento da pedra de gelo
+                if (alturaPedraDeGelo > 0) {
+                    alturaPedraDeGelo -= taxaDerretimento;
+                    pedraDeGelo.style.height = `${alturaPedraDeGelo}px`;
+                    gota.style.opacity = 1;
+                    setTimeout(() => {
+                        gota.style.opacity = 0;
+                    }, 500);
+                }
             }
-        });
-
-        slowDownButton.addEventListener('click', () => {
-            if (spinning) {
-                rotationSpeed *= 1.5;
-                motorImage.style.animation = `spin ${rotationSpeed}s linear infinite`;
-                updateIceMeltRate();
-            }
-        });
-
-        resetButton.addEventListener('click', () => {
-            rotationSpeed = initialSpeed;
-            iceHeight = 200;
-            iceBlock.style.height = `${iceHeight}px`;
-            if (spinning) {
-                motorImage.style.animation = `spin ${rotationSpeed}s linear infinite`;
-            }
-        });
-
-        upButton.addEventListener('click', () => {
-            let top = parseInt(window.getComputedStyle(motorImage).top, 10);
-            motorImage.style.top = `${top - moveStep}px`;
-        });
-
-        downButton.addEventListener('click', () => {
-            let top = parseInt(window.getComputedStyle(motorImage).top, 10);
-            motorImage.style.top = `${top + moveStep}px`;
-        });
-
-        leftButton.addEventListener('click', () => {
-            let left = parseInt(window.getComputedStyle(motorImage).left, 10);
-            motorImage.style.left = `${left - moveStep}px`;
-        });
-
-        rightButton.addEventListener('click', () => {
-            let left = parseInt(window.getComputedStyle(motorImage).left, 10);
-            motorImage.style.left = `${left + moveStep}px`;
-        });
-
-        function meltIce() {
-            if (spinning && iceHeight > 0) {
-                iceHeight -= iceMeltRate;
-                iceBlock.style.height = `${iceHeight}px`;
-                setTimeout(meltIce, 1000);
-            }
-        }
-
-        function updateIceMeltRate() {
-            iceMeltRate = initialSpeed / rotationSpeed;
         }
     </script>
 </body>
