@@ -21,7 +21,7 @@
             position: relative;
         }
 
-        .container img {
+        #resistencia {
             width: 200px;
             transition: filter 0.5s;
         }
@@ -33,14 +33,14 @@
             bottom: 0;
         }
 
-        #gota {
+        #fumaça {
             position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 10px;
-            height: 20px;
-            background-color: white;
-            border-radius: 50%;
+            top: -50px;
+            left: 50px;
+            width: 100px;
+            height: 100px;
+            background-image: url('fumaça.png'); /* Adicione a imagem da fumaça */
+            background-size: cover;
             opacity: 0;
             transition: opacity 0.5s;
         }
@@ -68,8 +68,8 @@
 <body>
     <div class="container">
         <img src="resistencia.png" alt="Resistência" id="resistencia">
-        <img src="pedra_de_gelo.png" alt="Pedra de Gelo" id="pedra_de_gelo">
-        <div id="gota"></div>
+        <div id="fumaça"></div>
+        <img src="pedradegelo.png" alt="Pedra de Gelo" id="pedra_de_gelo">
     </div>
     <div class="controls">
         <button id="aquecerButton">Aquecer</button>
@@ -78,7 +78,7 @@
     <script>
         let resistencia = document.getElementById('resistencia');
         let pedraDeGelo = document.getElementById('pedra_de_gelo');
-        let gota = document.getElementById('gota');
+        let fumaça = document.getElementById('fumaça');
         let aquecerButton = document.getElementById('aquecerButton');
         let pararButton = document.getElementById('pararButton');
 
@@ -98,24 +98,23 @@
         pararButton.addEventListener('click', () => {
             aquecendo = false;
             clearInterval(intervaloAquecimento);
+            resistencia.style.filter = `hue-rotate(0deg) brightness(1)`;  // Reseta a cor da resistência
+            fumaça.style.opacity = 0;
         });
 
         function aquecer() {
             if (aquecendo) {
                 temperatura += 5;
-                resistencia.style.filter = `hue-rotate(${temperatura}deg)`;
+                resistencia.style.filter = `hue-rotate(${temperatura}deg) brightness(${1 + temperatura / 200})`;
                 if (temperatura >= 360) {
-                    temperatura = 0;
+                    resistencia.style.filter = `hue-rotate(0deg) brightness(2)`;
+                    fumaça.style.opacity = 1;
                 }
 
                 // Derretimento da pedra de gelo
                 if (alturaPedraDeGelo > 0) {
                     alturaPedraDeGelo -= taxaDerretimento;
                     pedraDeGelo.style.height = `${alturaPedraDeGelo}px`;
-                    gota.style.opacity = 1;
-                    setTimeout(() => {
-                        gota.style.opacity = 0;
-                    }, 500);
                 }
             }
         }
