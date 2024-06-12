@@ -106,7 +106,7 @@
             aquecendo = false;
             clearInterval(intervaloAquecimento);
             temperatura = 0;
-            resistencia.style.filter = `brightness(1)`;  // Reseta a cor da resistência
+            resistencia.style.filter = `none`;  // Reseta a cor da resistência
             fumaça.style.opacity = 0;
             alturaPedraDeGelo = 100;
             pedraDeGelo.style.height = `${alturaPedraDeGelo}px`;
@@ -115,9 +115,8 @@
         function aquecer() {
             if (aquecendo) {
                 temperatura += 5;
-                resistencia.style.filter = `brightness(${1 + temperatura / 50})`;
                 if (temperatura >= 100) {
-                    resistencia.style.filter = `brightness(4) saturate(100)`;
+                    resistencia.style.filter = `drop-shadow(0 0 20px red) saturate(30)`;  // Aqui está a alteração de cor
                     fumaça.style.opacity = 1;
                 }
 
