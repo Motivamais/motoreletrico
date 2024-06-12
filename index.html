@@ -12,7 +12,7 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
+            background-color: #0000ff; /* Azul */
         }
 
         .container {
@@ -74,6 +74,7 @@
     <div class="controls">
         <button id="aquecerButton">Aquecer</button>
         <button id="pararButton">Parar</button>
+        <button id="resetButton">Reset</button>
     </div>
     <script>
         let resistencia = document.getElementById('resistencia');
@@ -81,6 +82,7 @@
         let fumaça = document.getElementById('fumaça');
         let aquecerButton = document.getElementById('aquecerButton');
         let pararButton = document.getElementById('pararButton');
+        let resetButton = document.getElementById('resetButton');
 
         let aquecendo = false;
         let temperatura = 0;
@@ -98,16 +100,24 @@
         pararButton.addEventListener('click', () => {
             aquecendo = false;
             clearInterval(intervaloAquecimento);
-            resistencia.style.filter = `hue-rotate(0deg) brightness(1)`;  // Reseta a cor da resistência
+        });
+
+        resetButton.addEventListener('click', () => {
+            aquecendo = false;
+            clearInterval(intervaloAquecimento);
+            temperatura = 0;
+            resistencia.style.filter = `brightness(1)`;  // Reseta a cor da resistência
             fumaça.style.opacity = 0;
+            alturaPedraDeGelo = 100;
+            pedraDeGelo.style.height = `${alturaPedraDeGelo}px`;
         });
 
         function aquecer() {
             if (aquecendo) {
                 temperatura += 5;
-                resistencia.style.filter = `hue-rotate(${temperatura}deg) brightness(${1 + temperatura / 200})`;
-                if (temperatura >= 360) {
-                    resistencia.style.filter = `hue-rotate(0deg) brightness(2)`;
+                resistencia.style.filter = `brightness(${1 + temperatura / 50})`;
+                if (temperatura >= 100) {
+                    resistencia.style.filter = `brightness(3) saturate(10)`;
                     fumaça.style.opacity = 1;
                 }
 
